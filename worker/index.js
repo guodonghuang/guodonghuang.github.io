@@ -36,7 +36,7 @@ export default {
       const { username, password } = await req.json().catch(() => ({}));
       const admin = await env.DB.prepare('SELECT * FROM admins WHERE username = ?').bind(String(username || '')).first();
       if (!admin || (await sha256Hex(String(password || '') + admin.salt)) !== admin.password_hash) {
-        return json({ error: 'wrong account or password' }, 401, env);
+        return json({ error: '账号或密码错误' }, 401, env);
       }
       const body = btoa(encodeURIComponent(JSON.stringify({ sub: admin.username, exp: Date.now() + 7 * 864e5 })));
       const sig = await hmac(body, env);
@@ -45,7 +45,7 @@ export default {
     }
 
     if (req.method !== 'GET' && !(await verify(req, env))) {
-      return json({ error: 'unauthorized' }, 401, env);
+      return json({ error: '未登录' }, 401, env);
     }
 
     if (p === '/api/products') {
@@ -107,9 +107,9 @@ export default {
     if (p === '/api/upload' && req.method === 'POST') {
       const fd = await req.formData();
       const file = fd.get('file');
-      if (!file || !file.type.startsWith('image/')) return json({ error: 'image required' }, 400, env);
+      if (!file || !file.type.startsWith('image/')) return json({ error: '请上传图片' }, 400, env);
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (bytes.byteLength > 5 * 1024 * 1024) return json({ error: 'image too large (max 5MB)' }, 400, env);
+      if (bytes.byteLength > 5 * 1024 * 1024) return json({ error: '图片不能超过 5MB' }, 400, env);
       const ext = (file.name.split('.').pop() || 'png').toLowerCase();
       const path = 'upload_' + Date.now().toString(36) + '_' + randomHex(4) + '.' + ext;
       await env.DB.prepare('INSERT INTO upload_files(path, content_type, data) VALUES(?,?,?)')
