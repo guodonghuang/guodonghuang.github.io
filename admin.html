@@ -73,6 +73,22 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
 .empty{text-align:center;color:var(--ink-soft);padding:26px 0;font-size:14px}
 #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:#2E241E;color:#F6EEE6;padding:11px 22px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:100}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* upload buttons + progress + preview */
+.uprow{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.upbtn{min-height:40px;padding:0 16px;background:var(--brand);color:#fff;border:none;border-radius:9px;cursor:pointer;font:inherit;font-size:14px;display:inline-flex;align-items:center;gap:7px;transition:background .2s}
+.upbtn:hover{background:var(--brand-deep)}
+.upbtn svg{width:15px;height:15px}
+.upprog{flex:1;min-width:120px}
+.upbar{height:8px;background:#F0E6DC;border-radius:999px;overflow:hidden;display:none}
+.upbar.on{display:block}
+.upfill{height:100%;width:0;background:var(--brand);border-radius:999px;transition:width .15s}
+.upstate{font-size:12px;color:var(--ink-soft);margin-top:3px;min-height:14px}
+.uptag{font-size:12px;border-radius:999px;padding:2px 10px;display:inline-block;font-weight:500}
+.uptag.ok{background:#E7F1E9;color:var(--ok)}
+.uptag.fail{background:#FBEEE9;color:var(--err)}
+.uppreview{width:64px;height:64px;border-radius:8px;border:1px solid var(--line);object-fit:cover;display:none;background:#fff}
+.uppreview.on{display:block}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
 </style>
 </head>
@@ -154,10 +170,13 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
         <h2>联系方式 / 二维码</h2>
         <p class="hint">粘贴图片直链 URL；或拖图片到输入框内自动上传</p>
         <div class="grid2">
-          <div class="field"><label for="cWeChat">微信群二维码</label><input id="cWeChat" type="url" placeholder="https://.../wechat-group.png"></div>
+          <div class="field"><label for="cWeChat">微信群二维码</label><input id="cWeChat" type="url" placeholder="https://.../wechat-group.png">
+<div class="uprow" data-up="cWeChat"><button type="button" class="upbtn" data-btn="cWeChat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>选择图片上传</button><input type="file" accept="image/*" class="upfile" data-file="cWeChat" style="display:none"><div class="upprog"><div class="upbar" data-bar="cWeChat"><div class="upfill" data-fill="cWeChat"></div></div><div class="upstate" data-state="cWeChat"></div></div><img class="uppreview" data-prev="cWeChat" alt="预览"></div></div>
           <div class="field"><label for="cDouyin">抖音号</label><input id="cDouyin" type="text" placeholder="douyin_xinxi"></div>
-          <div class="field"><label for="cDouyinQr">抖音号二维码（可选）</label><input id="cDouyinQr" type="url" placeholder="https://.../douyin.png"></div>
-          <div class="field"><label for="cOfficial">微信公众号二维码</label><input id="cOfficial" type="url" placeholder="https://.../official-account.png"></div>
+          <div class="field"><label for="cDouyinQr">抖音号二维码（可选）</label><input id="cDouyinQr" type="url" placeholder="https://.../douyin.png">
+<div class="uprow" data-up="cDouyinQr"><button type="button" class="upbtn" data-btn="cDouyinQr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>选择图片上传</button><input type="file" accept="image/*" class="upfile" data-file="cDouyinQr" style="display:none"><div class="upprog"><div class="upbar" data-bar="cDouyinQr"><div class="upfill" data-fill="cDouyinQr"></div></div><div class="upstate" data-state="cDouyinQr"></div></div><img class="uppreview" data-prev="cDouyinQr" alt="预览"></div></div>
+          <div class="field"><label for="cOfficial">微信公众号二维码</label><input id="cOfficial" type="url" placeholder="https://.../official-account.png">
+<div class="uprow" data-up="cOfficial"><button type="button" class="upbtn" data-btn="cOfficial"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>选择图片上传</button><input type="file" accept="image/*" class="upfile" data-file="cOfficial" style="display:none"><div class="upprog"><div class="upbar" data-bar="cOfficial"><div class="upfill" data-fill="cOfficial"></div></div><div class="upstate" data-state="cOfficial"></div></div><img class="uppreview" data-prev="cOfficial" alt="预览"></div></div>
         </div>
         <div class="savebar"><button class="ghost" id="resetContacts">重置</button><button class="save" id="saveContactsBtn">保存联系方式</button></div>
       </div>
@@ -182,6 +201,7 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
   <div class="field"><label for="pdDesc">商品描述</label><textarea id="pdDesc" rows="2"></textarea></div>
   <div class="field"><label for="pdImage">商品图（直链 URL 或拖入图片自动上传）</label>
     <input id="pdImage" type="url" placeholder="https://... 或留空使用占位图">
+<div class="uprow" data-up="pdImage"><button type="button" class="upbtn" data-btn="pdImage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>选择图片上传</button><input type="file" accept="image/*" class="upfile" data-file="pdImage" style="display:none"><div class="upprog"><div class="upbar" data-bar="pdImage"><div class="upfill" data-fill="pdImage"></div></div><div class="upstate" data-state="pdImage"></div></div><img class="uppreview" data-prev="pdImage" alt="预览"></div>
     <p class="err-msg" id="pdErr"></p>
   </div>
   <div class="savebar">
@@ -379,22 +399,109 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
       .finally(function(){ $("cpSave").disabled=false; $("cpSave").textContent="保存新密码"; });
   });
 
-  // ---------- 图片上传（拖入输入框 → 上传 → 回填 URL） ----------
-  ["pdImage","cWeChat","cDouyinQr","cOfficial"].forEach(function(id){
-    var el=$(id); if(!el) return;
-    el.addEventListener("dragover", function(e){ e.preventDefault(); el.style.borderColor="var(--brand)"; });
-    el.addEventListener("dragleave", function(){ el.style.borderColor=""; });
-    el.addEventListener("drop", function(e){
-      e.preventDefault(); el.style.borderColor="";
-      var f=e.dataTransfer.files[0];
-      if(!f || !f.type.match(/^image\//)) { toast("请拖入图片文件"); return; }
-      var fd=new FormData(); fd.append("file",f);
-      fetch(API_BASE+"/api/upload",{method:"POST",headers:{Authorization:"Bearer "+token},body:fd})
-        .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error||"上传失败"); return d; }); })
-        .then(function(d){ el.value=d.url; toast("图片已上传"); })
-        .catch(function(err){ toast("上传失败："+err.message); });
-    });
+  // ---------- 图片上传（选择按钮 + 进度 + 验证 + 预览） ----------
+  var UP_FIELDS = ["pdImage","cWeChat","cDouyinQr","cOfficial"];
+  function upBar(fid){ return document.querySelector('[data-bar="'+fid+'"]'); }
+  function upFill(fid){ return document.querySelector('[data-fill="'+fid+'"]'); }
+  function upState(fid){ return document.querySelector('[data-state="'+fid+'"]'); }
+  function upPrev(fid){ return document.querySelector('[data-prev="'+fid+'"]'); }
+  function upFile(fid){ return document.querySelector('[data-file="'+fid+'"]'); }
+
+  function setProgress(fid, pct, label){
+    var b=upBar(fid), f=upFill(fid), st=upState(fid);
+    b.classList.add("on");
+    f.style.width = Math.max(0, Math.min(100, pct)) + "%";
+    if(st) st.textContent = label || (pct+"%");
+  }
+  function finishUpload(fid, ok, msg){
+    var b=upBar(fid), st=upState(fid);
+    b.classList.remove("on");
+    if(st){ st.textContent = msg || ""; st.style.color = ok ? "var(--ok)" : "var(--err)"; }
+    setTimeout(function(){ if(st) st.style.color=""; }, ok?4000:6000);
+  }
+  function showPrev(fid, url){
+    var im=upPrev(fid);
+    if(!im) return;
+    if(!url){ im.classList.remove("on"); return; }
+    im.classList.add("on"); im.src = url;
+    im.onerror = function(){ im.classList.remove("on"); };
+    im.onload = function(){ im.classList.add("on"); };
+  }
+  // 验证图片 URL 是否可访问（HEAD/GET + 加载到 Image 试渲染）
+  function verifyImage(url, fid){
+    return fetch(url, { method:"GET" })
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status);
+        var ct = r.headers.get("Content-Type") || "";
+        if(ct.indexOf("image") !== -1) return r;
+        return r; }) // 允许返回，再让 Image 验证
+      .then(function(){
+        var img = new Image();
+        return new Promise(function(res){
+          img.onload = function(){ res(true); };
+          img.onerror = function(){ res(false); };
+          img.src = url + (url.indexOf("?")>-1 ? "&t=" : "?t=") + Date.now();
+          setTimeout(function(){ res(false); }, 15000); // 15s 超时
+        });
+      });
+  }
+  function doUpload(fid, file){
+    if(!file || !file.type.match(/^image\//)) { toast("请选图片文件"); return; }
+    var input = document.getElementById(fid);
+    var fd = new FormData(); fd.append("file", file);
+    var xhr = new XMLHttpRequest();
+    setProgress(fid, 5, "上传中…");
+    xhr.open("POST", API_BASE + "/api/upload");
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.upload.onprogress = function(e){
+      if(e.lengthComputable){
+        var pct = Math.round(e.loaded / e.total * 80) + 5; // 5~85% 为上传进度
+        setProgress(fid, pct, "上传中 " + pct + "%");
+      }
+    };
+    xhr.onload = function(){
+      var d = {};
+      try { d = JSON.parse(xhr.responseText); } catch(e) {}
+      if(xhr.status < 200 || xhr.status >= 300 || !d.url){
+        finishUpload(fid, false, "上传失败：" + (d.error || ("HTTP " + xhr.status)));
+        upFill(fid).style.width = "0";
+        return;
+      }
+      setProgress(fid, 90, "验证图片…");
+      input.value = d.url;
+      showPrev(fid, d.url);
+      verifyImage(d.url, fid).then(function(ok){
+        setProgress(fid, 100, "完成");
+        if(ok){ finishUpload(fid, true, "已上传并验证可显示 ✓"); }
+        else { finishUpload(fid, false, "已上传，但 URL 暂时无法显示，请确认 CDN/域名可访问"); }
+      }).catch(function(){
+        finishUpload(fid, false, "验证失败（跨域或网络），URL 已填入：" + d.url);
+      });
+    };
+    xhr.onerror = function(){ setProgress(fid,0,""); finishUpload(fid, false, "网络错误，请重试"); };
+    xhr.send(fd);
+  }
+  // 绑定：选择按钮 -> file input；拖拽保留
+  UP_FIELDS.forEach(function(fid){
+    var btn = document.querySelector('[data-btn="'+fid+'"]');
+    var finput = upFile(fid);
+    var el = document.getElementById(fid);
+    if(btn && finput){
+      btn.addEventListener("click", function(){ finput.click(); });
+      finput.addEventListener("change", function(){ doUpload(fid, finput.files[0]); });
+    }
+    // 拖拽（保留）
+    if(el){
+      el.addEventListener("dragover", function(e){ e.preventDefault(); el.style.borderColor="var(--brand)"; });
+      el.addEventListener("dragleave", function(){ el.style.borderColor=""; });
+      el.addEventListener("drop", function(e){ e.preventDefault(); el.style.borderColor=""; doUpload(fid, e.dataTransfer.files[0]); });
+    }
+    // URL 输入变化时刷新预览
+    if(el){
+      el.addEventListener("input", function(){ showPrev(fid, el.value.trim()); });
+    }
   });
+
+
 
   // 已登录则直接进入后台
   if(token && API_BASE.indexOf("example")===-1){ showApp(true); }
