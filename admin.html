@@ -251,7 +251,7 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
     api("/api/products",{token:false}).then(function(list){
       currentProducts = list||[];
       renderProducts();
-    }).catch(function(err){ if(err.message!=="未登录" && err.message!=="HTTP 401") toast("加载商品失败："+err.message); });
+    }).catch(function(err){ if(!/HTTP 401|未登录/.test(err.message)) toast("加载商品失败："+err.message); });
   }
   function renderProducts(){
     var body=$("prodBody");
@@ -311,7 +311,7 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
       $("shopName").value=s.shopName||"心喜";
       $("shopAddress").value=s.address||"河南省商丘市虞城县大同路";
       $("shopAbout").value=s.about||"";
-    }).catch(function(err){ if(err.message!=="HTTP 401" && err.message!=="未登录") toast("加载失败："+err.message); });
+    }).catch(function(err){ if(!/HTTP 401|未登录/.test(err.message)) toast("加载失败："+err.message); });
   };
   $("resetShop").addEventListener("click", loadShop);
   $("saveShopBtn").addEventListener("click", function(){
@@ -330,7 +330,7 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
       $("cDouyin").value=c.douyinId||"";
       $("cDouyinQr").value=c.douyinQr||"";
       $("cOfficial").value=c.officialAccountQr||"";
-    }).catch(function(err){ if(err.message!=="HTTP 401" && err.message!=="未登录") toast("加载失败："+err.message); });
+    }).catch(function(err){ if(!/HTTP 401|未登录/.test(err.message)) toast("加载失败："+err.message); });
   };
   $("resetContacts").addEventListener("click", loadContacts);
   $("saveContactsBtn").addEventListener("click", function(){
