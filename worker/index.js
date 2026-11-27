@@ -47,7 +47,7 @@ export default {
       const row = await env['xinxi-api'].prepare('SELECT data, content_type FROM upload_files WHERE path = ?')
         .bind(p.slice('/uploads/'.length)).first();
       if (!row) return new Response('Not found', { status: 404, headers: cors(env) });
-      return new Response(row.data, {
+      return new Response(new Uint8Array(row.data || []), {
         headers: { ...cors(env), 'Content-Type': row.content_type || 'application/octet-stream', 'Cache-Control': 'public, max-age=86400' },
       });
     }
@@ -173,7 +173,7 @@ export default {
 };
 
 function cors(env) {
-  const allow = env ? (env.ALLOW_ORIGIN || '*') : '*';
+  const allow = env ? String(env.ALLOW_ORIGIN || '*').trim().replace(/\/+$/, '') : '*';
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
