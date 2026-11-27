@@ -1,0 +1,14 @@
+name = "xinxi-api"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "xinxi-db"
+database_id = "<你的 D1 database_id>"   # 替换：npx wrangler d1 create xinxi-db 后填入
+
+# 小图够用（D1 存 BLOB，<=5MB/张）；更大的图改 R2
+
+# 需要的 Worker 环境变量（在控制台填）：
+#   WORKER_SECRET   一串随机字符串，用于签名登录 token
+#   ALLOW_ORIGIN    允许的跨域来源，多个用逗号分隔，如 https://huangmengmeng.abrdns.com

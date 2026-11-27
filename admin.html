@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心喜 · 商家后台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#B4552D; --brand-deep:#8A3E1E; --brand-soft:#F3E3D7;
+  --bg:#F7F2EC; --card:#fff; --ink:#3A2E28; --ink-soft:#7A6C63;
+  --line:#EADFD3; --ok:#3E7C4F; --err:#B3402F;
+  --radius:12px;
+  --font-serif:"Noto Serif SC",serif; --font-sans:"Noto Sans SC",-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);font-size:15px;line-height:1.6}
+a{color:inherit}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(58,46,40,.08);width:100%;max-width:380px;padding:36px 32px}
+.login-card .mark{width:52px;height:52px;border-radius:14px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:26px;font-weight:700;margin:0 auto 14px}
+.login-card h1{font-family:var(--font-serif);text-align:center;font-size:22px;margin-bottom:4px}
+.login-card .sub{text-align:center;color:var(--ink-soft);font-size:13.5px;margin-bottom:26px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13.5px;font-weight:500;margin-bottom:6px;color:var(--ink)}
+.field input,.field select,.field textarea{width:100%;min-height:46px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;transition:border .2s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand)}
+.field textarea{min-height:80px;resize:vertical}
+.err-msg{color:var(--err);font-size:13px;margin-top:6px;min-height:0}
+.login-btn{width:100%;min-height:48px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:15.5px;font-weight:500;cursor:pointer;transition:background .2s;margin-top:8px}
+.login-btn:hover{background:var(--brand-deep)}
+.login-btn:disabled{opacity:.55;cursor:not-allowed}
+.app{display:none;min-height:100vh}
+.app.on{display:block}
+.topbar{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.topbar .in{max-width:1080px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.topbar .mark{width:34px;height:34px;border-radius:9px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:17px;font-weight:700}
+.topbar .t{display:flex;align-items:center;gap:10px;font-weight:600}
+.topbar small{color:var(--ink-soft);font-weight:400}
+.iconbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 14px;font-size:13.5px;cursor:pointer;transition:all .2s;color:var(--ink-soft);min-height:40px;text-decoration:none;display:inline-flex;align-items:center}
+.iconbtn:hover{border-color:var(--brand);color:var(--brand)}
+main.container{max-width:1080px;margin:0 auto;padding:28px 20px 64px}
+.tabs{display:flex;gap:6px;background:#EFE7DD;border-radius:11px;padding:5px;margin-bottom:24px;flex-wrap:wrap}
+.tab{flex:1;min-width:120px;text-align:center;padding:9px 18px;border-radius:8px;font-size:14.5px;cursor:pointer;border:none;background:transparent;font-family:inherit;transition:all .2s;color:var(--ink-soft)}
+.tab.active{background:var(--card);color:var(--brand-deep);font-weight:600;box-shadow:0 1px 4px rgba(58,46,40,.08)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+.card h2{font-size:16px;font-weight:600;margin-bottom:4px}
+.card .hint{font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--ink-soft);font-weight:500;font-size:13px;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid #F2EAE1;vertical-align:middle}
+td .thumb{width:52px;height:40px;border-radius:8px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--font-serif);color:var(--brand-deep);overflow:hidden}
+td .thumb img{width:100%;height:100%;object-fit:cover}
+.rowbtns{display:flex;gap:8px}
+.act{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;transition:all .15s;min-height:34px}
+.act:hover{border-color:var(--brand);color:var(--brand)}
+.act.del{color:var(--err)}
+.act.del:hover{border-color:var(--err);background:#FBEEE9}
+.tagpill{background:var(--brand-soft);color:var(--brand-deep);border-radius:999px;padding:2px 10px;font-size:12px;display:inline-block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.savebar{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.save{min-height:44px;padding:0 22px;background:var(--brand);color:#fff;border:none;border-radius:10px;cursor:pointer;font:inherit;transition:background .2s}
+.save:hover{background:var(--brand-deep)}
+.save:disabled{opacity:.55}
+.ghost{min-height:44px;padding:0 18px;background:#fff;border:1px solid var(--line);border-radius:10px;cursor:pointer;font:inherit;color:var(--ink-soft)}
+dialog{border:none;border-radius:14px;padding:26px;max-width:520px;width:94%;box-shadow:0 20px 50px rgba(30,20,12,.3)}
+dialog::backdrop{background:rgba(46,36,30,.45)}
+dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
+.banner{background:#FBF1E8;border:1px solid #F0D9C4;color:var(--brand-deep);border-radius:10px;padding:12px 16px;font-size:13.5px;margin-bottom:18px}
+.empty{text-align:center;color:var(--ink-soft);padding:26px 0;font-size:14px}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:#2E241E;color:#F6EEE6;padding:11px 22px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:100}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- ========== 登录页 ========== -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <div class="mark" aria-hidden="true">心</div>
+    <h1>心喜 · 商家后台</h1>
+    <p class="sub">登录后可管理商品、店铺信息与联系方式</p>
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="lgUser">账号</label>
+        <input id="lgUser" name="username" type="text" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="lgPass">密码</label>
+        <input id="lgPass" name="password" type="password" autocomplete="current-password" required>
+        <p class="err-msg" id="lgErr" role="alert"></p>
+      </div>
+      <button class="login-btn" type="submit" id="lgBtn">登 录</button>
+    </form>
+  </div>
+</div>
+
+<!-- ========== 管理页 ========== -->
+<div class="app" id="appView">
+  <div class="topbar">
+    <div class="in">
+      <div class="t"><span class="mark" aria-hidden="true">心</span><span>心喜商家后台</span><small>后台</small></div>
+      <div style="display:flex;gap:8px">
+        <a class="iconbtn" href="/" style="text-decoration:none">查看官网</a>
+        <button class="iconbtn" id="logoutBtn">退出登录</button>
+      </div>
+    </div>
+  </div>
+  <main class="container">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="products" role="tab">商品管理</button>
+      <button class="tab" data-tab="shop" role="tab">店铺信息</button>
+      <button class="tab" data-tab="contacts" role="tab">联系方式</button>
+    </div>
+
+    <section id="tab-products">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div><h2>商品列表</h2><p class="hint">新增 / 编辑商品，官网即时生效</p></div>
+          <button class="save" style="min-height:42px" id="addProductBtn">＋ 新增商品</button>
+        </div>
+        <div style="margin-top:18px;overflow-x:auto">
+          <table>
+            <thead><tr><th style="min-width:64px">图</th><th>名称</th><th>分类</th><th>价格</th><th>标签</th><th style="width:170px">操作</th></tr></thead>
+            <tbody id="prodBody"></tbody>
+          </table>
+          <div class="empty" id="prodEmpty" hidden>还没有商品，点右上角「新增商品」添加第一款吧。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-shop" hidden>
+      <div class="card">
+        <h2>店铺信息</h2>
+        <p class="hint">官网展示的品牌名称与地址</p>
+        <div class="grid2">
+          <div class="field"><label for="shopName">店铺名称</label><input id="shopName" type="text" value="心喜"></div>
+          <div class="field"><label for="shopAddress">店铺地址</label><input id="shopAddress" type="text" value="河南省商丘市虞城县大同路"></div>
+        </div>
+        <div class="field"><label for="shopAbout">关于小店（首页展示）</label>
+          <textarea id="shopAbout" rows="3">「心喜」取自「让心欢喜」。我们在虞城县大同路开着一家小小的袜子内衣店，卖的不是多，是每一双袜、每一件内衣都值得细看。</textarea>
+        </div>
+        <div class="savebar"><button class="ghost" id="resetShop">重置</button><button class="save" id="saveShopBtn">保存店铺信息</button></div>
+      </div>
+    </section>
+
+    <section id="tab-contacts" hidden>
+      <div class="card">
+        <h2>联系方式 / 二维码</h2>
+        <p class="hint">粘贴图片直链 URL；或拖图片到输入框内自动上传</p>
+        <div class="grid2">
+          <div class="field"><label for="cWeChat">微信群二维码</label><input id="cWeChat" type="url" placeholder="https://.../wechat-group.png"></div>
+          <div class="field"><label for="cDouyin">抖音号</label><input id="cDouyin" type="text" placeholder="douyin_xinxi"></div>
+          <div class="field"><label for="cDouyinQr">抖音号二维码（可选）</label><input id="cDouyinQr" type="url" placeholder="https://.../douyin.png"></div>
+          <div class="field"><label for="cOfficial">微信公众号二维码</label><input id="cOfficial" type="url" placeholder="https://.../official-account.png"></div>
+        </div>
+        <div class="savebar"><button class="ghost" id="resetContacts">重置</button><button class="save" id="saveContactsBtn">保存联系方式</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 商品编辑弹窗 -->
+<dialog id="pdialog" aria-labelledby="pdTitle">
+  <h3 id="pdTitle">新增商品</h3>
+  <div class="field"><label for="pdName">商品名称 *</label><input id="pdName" type="text"></div>
+  <div class="grid2">
+    <div class="field"><label for="pdCat">分类 *</label>
+      <select id="pdCat"><option>袜子</option><option>内衣</option></select>
+    </div>
+    <div class="field"><label for="pdPrice">现价（元）*</label><input id="pdPrice" type="number" min="0" step="0.1"></div>
+  </div>
+  <div class="grid2">
+    <div class="field"><label for="pdOldPrice">原价（元，可选）</label><input id="pdOldPrice" type="number" min="0" step="0.1"></div>
+    <div class="field"><label for="pdTag">标签（新品/热卖等，可选）</label><input id="pdTag" type="text" placeholder="如：新品"></div>
+  </div>
+  <div class="field"><label for="pdDesc">商品描述</label><textarea id="pdDesc" rows="2"></textarea></div>
+  <div class="field"><label for="pdImage">商品图（直链 URL 或拖入图片自动上传）</label>
+    <input id="pdImage" type="url" placeholder="https://... 或留空使用占位图">
+    <p class="err-msg" id="pdErr"></p>
+  </div>
+  <div class="savebar">
+    <button class="ghost" id="pdCancel">取消</button>
+    <button class="save" id="pdSave">保存商品</button>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var API_BASE = "https://xinxi-api.example.workers.dev"; // TODO: 替换为你的 Worker 地址
+  var token = sessionStorage.getItem("xx_token") || "";
+  var currentProducts = [];
+  var editingId = null;
+  var currentTab = "products";
+
+  function $(id){ return document.getElementById(id); }
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2200); }
+  function authHeaders(){ return { "Content-Type":"application/json", "Authorization":"Bearer "+token }; }
+  function api(path, opts){
+    opts = opts || {};
+    var headers = {};
+    if(opts.body!==undefined) headers["Content-Type"]="application/json";
+    if(opts.token===false){} else { if(token) headers["Authorization"]="Bearer "+token; }
+    return fetch(API_BASE+path, { method:opts.method||"GET", headers:headers, body:opts.body?JSON.stringify(opts.body):undefined })
+      .then(function(r){
+        return r.json().then(function(d){ if(!r.ok) throw new Error(d.error||("HTTP "+r.status)); return d; });
+      });
+  }
+
+  function showApp(on){
+    $("loginView").style.display = on ? "none":"flex";
+    $("appView").classList.toggle("on", !!on);
+    if(on) loadProducts();
+  }
+
+  $("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var u=$("lgUser").value.trim(), p=$("lgPass").value;
+    if(!u||!p){ $("lgErr").textContent="请输入账号和密码"; return; }
+    $("lgErr").textContent="";
+    var btn=$("lgBtn"); btn.disabled=true; btn.textContent="登录中…";
+    fetch(API_BASE+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:u,password:p})})
+      .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error||"登录失败"); return d; }); })
+      .then(function(d){ token=d.token; sessionStorage.setItem("xx_token",token); toast("登录成功"); showApp(true); })
+      .catch(function(err){ $("lgErr").textContent = err.message; })
+      .finally(function(){ btn.disabled=false; btn.textContent="登 录"; });
+  });
+
+  function logout(){ token=""; sessionStorage.removeItem("xx_token"); location.reload(); }
+  $("logoutBtn").addEventListener("click", logout);
+
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){
+    t.addEventListener("click", function(){
+      currentTab = t.dataset.tab;
+      Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(x){ x.classList.toggle("active", x===t); });
+      ["products","shop","contacts"].forEach(function(n){ $("tab-"+n).hidden = n!==currentTab; });
+      if(currentTab==="products") loadProducts();
+      if(currentTab==="shop") loadShop();
+      if(currentTab==="contacts") loadContacts();
+    });
+  });
+
+  // ---------- 商品 ----------
+  function loadProducts(){
+    api("/api/products",{token:false}).then(function(list){
+      currentProducts = list||[];
+      renderProducts();
+    }).catch(function(err){ if(err.message!=="未登录" && err.message!=="HTTP 401") toast("加载商品失败："+err.message); });
+  }
+  function renderProducts(){
+    var body=$("prodBody");
+    $("prodEmpty").hidden = currentProducts.length>0;
+    body.innerHTML = currentProducts.map(function(p){
+      return '<tr>' +
+        '<td><div class="thumb">'+(p.image?'<img src="'+p.image+'" alt="">':(p.category==="袜子"?"袜":"衣"))+'</div></td>' +
+        '<td>'+esc(p.name)+'</td>' +
+        '<td><span class="tagpill">'+esc(p.category||"")+'</span></td>' +
+        '<td>¥'+Number(p.price||0)+'</td>' +
+        '<td>'+(p.tag?esc(p.tag):"")+'</td>' +
+        '<td class="rowbtns"><button class="act" data-edit="'+p.id+'">编辑</button>' +
+        '<button class="act del" data-del="'+p.id+'">删除</button></td></tr>';
+    }).join("");
+  }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  $("prodBody").addEventListener("click", function(e){
+    var eb=e.target.closest("[data-edit]"), db=e.target.closest("[data-del]");
+    if(eb){ openEditor(eb.dataset.edit); }
+    if(db){
+      var p=currentProducts.find(function(x){return x.id===db.dataset.del;});
+      if(p && confirm('确认删除「'+p.name+'」？删除后官网同步下架。')){
+        api("/api/products/"+db.dataset.del,{method:"DELETE"}).then(function(){ loadProducts(); toast("已删除"); }).catch(function(err){toast("删除失败："+err.message);});
+      }
+    }
+  });
+
+  function openEditor(id){
+    editingId = id;
+    var p = id ? currentProducts.find(function(x){return x.id===id;}) : {name:"",category:"袜子",price:"",oldPrice:"",tag:"",desc:"",image:""};
+    $("pdTitle").textContent = id?"编辑商品":"新增商品";
+    $("pdName").value=p.name||""; $("pdCat").value=p.category||"袜子";
+    $("pdPrice").value=p.price||""; $("pdOldPrice").value=p.oldPrice||"";
+    $("pdTag").value=p.tag||""; $("pdDesc").value=p.desc||""; $("pdImage").value=p.image||"";
+    $("pdErr").textContent="";
+    $("pdialog").showModal();
+  }
+  $("addProductBtn").addEventListener("click", function(){ openEditor(null); });
+  $("pdCancel").addEventListener("click", function(){ $("pdialog").close(); });
+  $("pdSave").addEventListener("click", function(){
+    var name=$("pdName").value.trim(), price=$("pdPrice").value;
+    if(!name){ $("pdErr").textContent="请填写商品名称"; return; }
+    if(price===""){ $("pdErr").textContent="请填写现价"; return; }
+    var body={ name:name, category:$("pdCat").value, price:parseFloat(price),
+      oldPrice:$("pdOldPrice").value?parseFloat($("pdOldPrice").value):null,
+      tag:$("pdTag").value.trim(), desc:$("pdDesc").value.trim(), image:$("pdImage").value.trim() };
+    var req = editingId ? api("/api/products/"+editingId,{method:"PUT",body:body}) : api("/api/products",{method:"POST",body:body});
+    req.then(function(){ $("pdialog").close(); loadProducts(); toast(editingId?"已更新":"已新增"); })
+       .catch(function(err){ $("pdErr").textContent="保存失败："+err.message; });
+  });
+
+  // ---------- 店铺信息 ----------
+  window.loadShop = function(){
+    api("/api/settings",{token:false}).then(function(s){
+      s=s||{};
+      $("shopName").value=s.shopName||"心喜";
+      $("shopAddress").value=s.address||"河南省商丘市虞城县大同路";
+      $("shopAbout").value=s.about||"";
+    }).catch(function(err){ if(err.message!=="HTTP 401" && err.message!=="未登录") toast("加载失败："+err.message); });
+  };
+  $("resetShop").addEventListener("click", loadShop);
+  $("saveShopBtn").addEventListener("click", function(){
+    api("/api/settings",{method:"PUT",body:{
+      shopName:$("shopName").value.trim(),
+      address:$("shopAddress").value.trim(),
+      about:$("shopAbout").value.trim()
+    }}).then(function(){ toast("店铺信息已保存"); }).catch(function(err){ toast("保存失败："+err.message); });
+  });
+
+  // ---------- 联系方式 ----------
+  window.loadContacts = function(){
+    api("/api/settings",{token:false}).then(function(s){
+      s=s||{}; var c=s.contacts||{};
+      $("cWeChat").value=c.weChatGroupQr||"";
+      $("cDouyin").value=c.douyinId||"";
+      $("cDouyinQr").value=c.douyinQr||"";
+      $("cOfficial").value=c.officialAccountQr||"";
+    }).catch(function(err){ if(err.message!=="HTTP 401" && err.message!=="未登录") toast("加载失败："+err.message); });
+  };
+  $("resetContacts").addEventListener("click", loadContacts);
+  $("saveContactsBtn").addEventListener("click", function(){
+    api("/api/settings",{method:"PUT",body:{contacts:{
+      weChatGroupQr:$("cWeChat").value.trim(),
+      douyinId:$("cDouyin").value.trim(),
+      douyinQr:$("cDouyinQr").value.trim(),
+      officialAccountQr:$("cOfficial").value.trim()
+    }}}).then(function(){ toast("联系方式已保存"); }).catch(function(err){ toast("保存失败："+err.message); });
+  });
+
+  // ---------- 图片上传（拖入输入框 → 上传 → 回填 URL） ----------
+  ["pdImage","cWeChat","cDouyinQr","cOfficial"].forEach(function(id){
+    var el=$(id); if(!el) return;
+    el.addEventListener("dragover", function(e){ e.preventDefault(); el.style.borderColor="var(--brand)"; });
+    el.addEventListener("dragleave", function(){ el.style.borderColor=""; });
+    el.addEventListener("drop", function(e){
+      e.preventDefault(); el.style.borderColor="";
+      var f=e.dataTransfer.files[0];
+      if(!f || !f.type.match(/^image\//)) { toast("请拖入图片文件"); return; }
+      var fd=new FormData(); fd.append("file",f);
+      fetch(API_BASE+"/api/upload",{method:"POST",headers:{Authorization:"Bearer "+token},body:fd})
+        .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error||"上传失败"); return d; }); })
+        .then(function(d){ el.value=d.url; toast("图片已上传"); })
+        .catch(function(err){ toast("上传失败："+err.message); });
+    });
+  });
+
+  // 已登录则直接进入后台
+  if(token && API_BASE.indexOf("example")===-1){ showApp(true); }
+  else if(token){ toast("请先在 admin.html 顶部配置真实的 API_BASE"); }
+  else {
+    fetch(API_BASE+"/api/health").then(function(r){ if(!r.ok) toast("后台服务未连接"); }).catch(function(){ toast("后台服务未连接，请先部署 Worker 并配置 API_BASE"); });
+  }
+})();
+</script>
+</body>
+</html>
