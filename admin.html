@@ -106,6 +106,7 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
       <div class="t"><span class="mark" aria-hidden="true">心</span><span>心喜商家后台</span><small>后台</small></div>
       <div style="display:flex;gap:8px">
         <a class="iconbtn" href="/" style="text-decoration:none">查看官网</a>
+        <button class="iconbtn" id="pwdBtn">修改密码</button>
         <button class="iconbtn" id="logoutBtn">退出登录</button>
       </div>
     </div>
@@ -186,6 +187,19 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
   <div class="savebar">
     <button class="ghost" id="pdCancel">取消</button>
     <button class="save" id="pdSave">保存商品</button>
+  </div>
+</dialog>
+
+<!-- 修改密码弹窗 -->
+<dialog id="pwdDialog">
+  <h3>修改密码</h3>
+  <div class="field"><label for="cpOld">当前密码</label><input id="cpOld" type="password" autocomplete="current-password"></div>
+  <div class="field"><label for="cpNew">新密码（至少 6 位）</label><input id="cpNew" type="password" autocomplete="new-password"></div>
+  <div class="field"><label for="cpNew2">确认新密码</label><input id="cpNew2" type="password" autocomplete="new-password"></div>
+  <p class="err-msg" id="cpErr"></p>
+  <div class="savebar">
+    <button class="ghost" id="cpCancel">取消</button>
+    <button class="save" id="cpSave">保存新密码</button>
   </div>
 </dialog>
 
@@ -340,6 +354,29 @@ dialog h3{font-family:var(--font-serif);font-size:19px;margin-bottom:16px}
       douyinQr:$("cDouyinQr").value.trim(),
       officialAccountQr:$("cOfficial").value.trim()
     }}}).then(function(){ toast("联系方式已保存"); }).catch(function(err){ toast("保存失败："+err.message); });
+  });
+
+  // ---------- 修改密码 ----------
+  var pwdDialog = $("pwdDialog");
+  $("pwdBtn").addEventListener("click", function(){
+    $("cpOld").value=""; $("cpNew").value=""; $("cpNew2").value="";
+    $("cpErr").textContent="";
+    pwdDialog.showModal();
+  });
+  $("cpCancel").addEventListener("click", function(){ pwdDialog.close(); });
+  $("cpSave").addEventListener("click", function(){
+    var oldPw=$("cpOld").value, newPw=$("cpNew").value, newPw2=$("cpNew2").value;
+    if(newPw.length < 6){ $("cpErr").textContent="新密码至少 6 位"; return; }
+    if(newPw !== newPw2){ $("cpErr").textContent="两次输入的新密码不一致"; return; }
+    $("cpSave").disabled=true; $("cpSave").textContent="保存中…";
+    api("/api/change-password",{method:"POST",body:{oldPassword:oldPw,newPassword:newPw}})
+      .then(function(){
+        pwdDialog.close();
+        toast("密码已修改，请重新登录");
+        setTimeout(logout, 1200);
+      })
+      .catch(function(err){ $("cpErr").textContent = err.message; })
+      .finally(function(){ $("cpSave").disabled=false; $("cpSave").textContent="保存新密码"; });
   });
 
   // ---------- 图片上传（拖入输入框 → 上传 → 回填 URL） ----------

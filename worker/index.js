@@ -71,6 +71,34 @@ export default {
       return json({ error: '未登录' }, 401, env);
     }
 
+
+    // 修改密码（需登录 + 旧密码校验）
+    if (p === '/api/change-password' && req.method === 'POST') {
+      const b = await req.json().catch(() => ({}));
+      const oldPw = String(b.oldPassword || '');
+      const newPw = String(b.newPassword || '');
+      if (newPw.length < 6) return json({ error: '新密码至少 6 位' }, 400, env);
+      const auth = req.headers.get('Authorization') || '';
+      const t = auth.replace('Bearer ', '');
+      const bi = t.lastIndexOf('.');
+      let username = 'admin';
+      if (bi > 0) {
+        try {
+          const payload = JSON.parse(decodeURIComponent(atob(t.slice(0, bi))));
+          if (payload.sub) username = payload.sub;
+        } catch (e) {}
+      }
+      const admin = await env['xinxi-api'].prepare('SELECT * FROM admins WHERE username = ?').bind(username).first();
+      if (!admin || (await sha256Hex(oldPw + admin.salt)) !== admin.password_hash) {
+        return json({ error: '旧密码不正确' }, 400, env);
+      }
+      const newSalt = randomHex(12);
+      const newHash = await sha256Hex(newPw + newSalt);
+      await env['xinxi-api'].prepare('UPDATE admins SET password_hash=?, salt=? WHERE username=?')
+        .bind(newHash, newSalt, username).run();
+      return json({ ok: true }, 200, env);
+    }
+
     if (p === '/api/products') {
       if (req.method === 'GET') {
         const rows = await env['xinxi-api'].prepare(
