@@ -5,7 +5,7 @@ compatibility_date = "2025-01-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "xinxi-db"
-database_id = "<你的 D1 database_id>"   # 替换：npx wrangler d1 create xinxi-db 后填入
+database_id = "0154c2ab-2908-49d7-9b21-580a378084f8"
 
 # 小图够用（D1 存 BLOB，<=5MB/张）；更大的图改 R2
 
